@@ -1,9 +1,13 @@
 import pygame
+from dino_runner.components.dinosaur import Dinosaur
+
+from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
-
+from dino_runner.utils.text_utils import get_centered_message, get_centered_message_down, get_centered_message_title, get_deaths_dinosaur, get_deaths_dinosaur_message, get_score_element
 
 class Game:
+    INITIAL_SPEED = 20
     def __init__(self):
         pygame.init()
         pygame.display.set_caption(TITLE)
@@ -11,10 +15,56 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
-        self.game_speed = 20
+        self.game_speed = self.INITIAL_SPEED
         self.x_pos_bg = 0
         self.y_pos_bg = 380
+        self.player = Dinosaur()
+        self.obstacle_manager = ObstacleManager()
+        self.points = 0
+        self.deaths = 0 
+        self.deaths_message = 0
 
+    def show_score(self):
+        self.points += 1
+
+        if self.points %100 == 0:
+            self.game_speed += 1
+
+        score, score_rect = get_score_element(self.points)
+        self.screen.blit(score, score_rect)
+
+    def show_deaths(self):
+
+        if self.playing == False:
+            self.deaths += 1
+        
+
+
+        score, score_rect = get_deaths_dinosaur(self.deaths)
+        self.screen.blit(score, score_rect)
+
+
+
+    def show_menu(self):
+        self.screen.fill((0,0,0))
+        text, text_rect = get_centered_message('HII ;-; PRESS ANY KEY TO START!!!')
+        self.screen.blit(text, text_rect)
+        text, text_rect = get_centered_message_down ('PLAY OF ANGIE ;3')
+        self.screen.blit(text, text_rect)
+        text, text_rect = get_centered_message_title ('-DINO GAME-')
+        self.screen.blit(text, text_rect)
+        text, text_rect = get_deaths_dinosaur_message ('DEATHS :')
+        self.screen.blit(text, text_rect)
+        pygame.display.update()
+        
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                print('GAME OVER')
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                self.run()
+        
     def run(self):
         # Game loop: events - update - draw
         self.playing = True
@@ -22,7 +72,11 @@ class Game:
             self.events()
             self.update()
             self.draw()
-        pygame.quit()
+        self.playing = False
+        self.points = 0
+        self.game_speed = self.INITIAL_SPEED
+        self.obstacle_manager.remove_obstacles()
+
 
     def events(self):
         for event in pygame.event.get():
@@ -30,12 +84,18 @@ class Game:
                 self.playing = False
 
     def update(self):
-        pass
+        user_input = pygame.key.get_pressed()
+        self.player.update(user_input)
+        self.obstacle_manager.update(self)
 
     def draw(self):
         self.clock.tick(FPS)
-        self.screen.fill((255, 255, 255))
+        self.screen.fill((216,145,239))
         self.draw_background()
+        self.player.draw(self.screen)
+        self.obstacle_manager.draw(self.screen)
+        self.show_score()
+        self.show_deaths()
         pygame.display.update()
         pygame.display.flip()
 
