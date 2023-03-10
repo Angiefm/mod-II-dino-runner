@@ -1,5 +1,5 @@
 from pygame.sprite import Sprite
-from dino_runner.utils.constants import SCREEN_WIDTH
+from dino_runner.utils.constants import SCREEN_WIDTH 
 
 class obstacle(Sprite):
 
@@ -12,7 +12,6 @@ class obstacle(Sprite):
         self.rect.x -= game_speed
         if self.rect.x < -self.rect.width:
             obstacles.pop()
-
 
     def draw(self, screen):
          screen.blit(self.image, self.rect)

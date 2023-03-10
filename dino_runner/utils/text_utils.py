@@ -25,7 +25,7 @@ def get_deaths_dinosaur(deaths):
     return text, text_rect
 
 def get_centered_message(message):
-    font = pygame.font.Font(FONT_STYLE, 50)
+    font = pygame.font.Font(FONT_STYLE, 40)
     text = font.render(message, True, GREEN)
     text_rect = text.get_rect()
     text_rect.center = (SCREEN_WIDTH //2, SCREEN_HEIGHT //2)
@@ -45,9 +45,9 @@ def get_centered_message_title(message_title):
     text_rect.center = (550,250)
     return text, text_rect
 
-def get_deaths_dinosaur_message(deaths_message):
+def get_ddd_dinosaur(ddd_message):
     font = pygame.font.Font(FONT_STYLE, 18)
-    text = font.render(deaths_message, True, LILAC)
+    text = font.render(f'DEATHS ={ddd_message}', True, LILAC)
     text_rect = text.get_rect()
-    text_rect.center = (550,340 )
+    text_rect.center = (550,340)
     return text, text_rect

@@ -7,5 +7,5 @@ class LargeCactus(obstacle):
 
     def __init__(self, image):
         super().__init__(image)
-        self.rect.y = 300
+        self.rect.y = 325
 

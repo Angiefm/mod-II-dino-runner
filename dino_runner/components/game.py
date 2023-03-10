@@ -2,9 +2,10 @@ import pygame
 from dino_runner.components.dinosaur import Dinosaur
 
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
-from dino_runner.utils.text_utils import get_centered_message, get_centered_message_down, get_centered_message_title, get_deaths_dinosaur, get_deaths_dinosaur_message, get_score_element
+from dino_runner.utils.constants import BG, ICON, INITIAL_GAME_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+from dino_runner.utils.text_utils import get_centered_message, get_centered_message_down, get_centered_message_title, get_ddd_dinosaur, get_deaths_dinosaur, get_score_element
 
 class Game:
     INITIAL_SPEED = 20
@@ -20,9 +21,10 @@ class Game:
         self.y_pos_bg = 380
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
         self.points = 0
         self.deaths = 0 
-        self.deaths_message = 0
+        self.ddd = 0
 
     def show_score(self):
         self.points += 1
@@ -37,12 +39,17 @@ class Game:
 
         if self.playing == False:
             self.deaths += 1
-        
-
 
         score, score_rect = get_deaths_dinosaur(self.deaths)
         self.screen.blit(score, score_rect)
 
+    def show_ddd(self):
+
+        if self.playing == False:
+            self.ddd += 1
+
+        score, score_rect = get_ddd_dinosaur(self.ddd)
+        self.screen.blit(score, score_rect)
 
 
     def show_menu(self):
@@ -53,7 +60,7 @@ class Game:
         self.screen.blit(text, text_rect)
         text, text_rect = get_centered_message_title ('-DINO GAME-')
         self.screen.blit(text, text_rect)
-        text, text_rect = get_deaths_dinosaur_message ('DEATHS :')
+        text, text_rect = get_ddd_dinosaur(self.ddd)
         self.screen.blit(text, text_rect)
         pygame.display.update()
         
@@ -72,11 +79,12 @@ class Game:
             self.events()
             self.update()
             self.draw()
-        self.playing = False
-        self.points = 0
-        self.game_speed = self.INITIAL_SPEED
+        pygame.time.delay(1500)
         self.obstacle_manager.remove_obstacles()
-
+        self.power_up_manager.remove_power_ups()
+        self.game_speed = INITIAL_GAME_SPEED
+        self.points = 0
+        
 
     def events(self):
         for event in pygame.event.get():
@@ -87,6 +95,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -94,8 +103,10 @@ class Game:
         self.draw_background()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         self.show_score()
         self.show_deaths()
+        self.show_ddd()
         pygame.display.update()
         pygame.display.flip()
 
